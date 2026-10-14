@@ -1,0 +1,37 @@
+name: Auto Release
+
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get short SHA
+        id: sha
+        run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build zip (same structure as GitHub archive)
+        run: |
+          git archive --format=zip --prefix=sborka-mc-master/ -o sborka.zip HEAD
+
+      - name: Delete previous 'latest' release
+        run: gh release delete latest --yes --cleanup-tag || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create new release
+        run: |
+          gh release create latest sborka.zip \
+            --title "Latest build (${{ steps.sha.outputs.short }})" \
+            --notes "Auto-built from commit ${{ steps.sha.outputs.short }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
