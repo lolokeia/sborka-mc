@@ -1,0 +1,9 @@
+[
+  {"version":1},
+  {"ingredient":{"id":"numismatics:cog"},"type":"item_stack","bookmarkType":"INGREDIENT"},
+  {"ingredient":{"id":"numismatics:crown"},"type":"item_stack","bookmarkType":"INGREDIENT"},
+  {"ingredient":{"id":"numismatics:sun"},"type":"item_stack","bookmarkType":"INGREDIENT"},
+  {"ingredient":{"id":"numismatics:spur"},"type":"item_stack","bookmarkType":"INGREDIENT"},
+  {"ingredient":{"id":"numismatics:bevel"},"type":"item_stack","bookmarkType":"INGREDIENT"},
+  {"ingredient":{"id":"numismatics:sprocket"},"type":"item_stack","bookmarkType":"INGREDIENT"}
+]

@@ -1,7 +1,10 @@
 *
 
-!mods/
-!kubejs/
-!config/
+!*/
+
+!mods/**
+!kubejs/**
+!config/**
+
 !update.bat
 !.gitignore
