@@ -2,46 +2,42 @@
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
+:: ============================================
+::  ОБНОВЛЕНИЕ СБОРКИ
+:: ============================================
+
 set "URL=https://github.com/lolokeia/sborka-mc/releases/download/latest/sborka.zip"
-set "API=https://api.github.com/repos/lolokeia/sborka-mc/commits/master"
+set "API=https://api.github.com/repos/lolokeia/sborka-mc/commits/main"
 set "FOLDER_NAME=sborka-mc-main"
 set "ZIP=update.zip"
 set "SHAFILE=.last_commit"
 
 echo.
-
+echo ============================================
 echo   ОБНОВЛЕНИЕ СБОРКИ
-
+echo ============================================
 echo.
 
-:: --- Проверка aria2c ---
-if not exist "aria2c.exe" (
-    where aria2c.exe >nul 2>&1
-    if errorlevel 1 (
-        echo [!] aria2c.exe не найден рядом со скриптом.
-        echo     Скачай с https://github.com/aria2/aria2/releases
-        pause
-        exit /b 1
-    )
+:: --- Проверка curl ---
+where curl.exe >nul 2>&1
+if errorlevel 1 (
+    echo [!] curl.exe не найден. Нужна Windows 10 1803+.
+    pause
+    exit /b 1
 )
 
-:: --- Узнаём последний коммит ---
+:: --- Проверка последнего коммита ---
 echo Проверяю последнюю версию на GitHub...
 set "REMOTE_SHA="
-for /f "tokens=2 delims=:," %%A in ('curl.exe -s "%API%" ^| findstr /r /c:"\"sha\""') do (
-    if not defined REMOTE_SHA set "REMOTE_SHA=%%A"
-)
+for /f "usebackq delims=" %%A in (`powershell -NoProfile -Command "(Invoke-RestMethod -Uri '%API%' -Headers @{'User-Agent'='updater'}).sha"`) do set "REMOTE_SHA=%%A"
 set "REMOTE_SHA=!REMOTE_SHA: =!"
-set "REMOTE_SHA=!REMOTE_SHA:"=!"
 
 if "!REMOTE_SHA!"=="" (
-    echo   Не удалось получить SHA, продолжаю без проверки.
-    echo   GitHub API мог лимитировать. Качаем всё равно.
+    echo   Не удалось получить SHA, качаю всё равно.
 ) else (
     echo   Последний коммит: !REMOTE_SHA!
 )
 
-:: --- Сравниваем с локальным ---
 if defined REMOTE_SHA if exist "%SHAFILE%" (
     set /p LOCAL_SHA=<"%SHAFILE%"
     if "!LOCAL_SHA!"=="!REMOTE_SHA!" (
@@ -55,25 +51,21 @@ if defined REMOTE_SHA if exist "%SHAFILE%" (
 :: --- Чистка перед скачиванием ---
 if exist "%ZIP%" del /f /q "%ZIP%"
 
-:: --- Загрузка через aria2c (16 потоков) ---
+:: --- Загрузка через curl ---
 echo.
-echo Качаю (16 потоков)...
+echo Качаю...
 echo.
 
-aria2c.exe -x16 -s16 -k1M ^
-    --file-allocation=none ^
-    --console-log-level=warn ^
-    --summary-interval=3 ^
+curl.exe -L --fail --retry 3 --retry-delay 2 --connect-timeout 30 ^
     -o "%ZIP%" ^
     "%URL%"
 
 if errorlevel 1 (
-    echo.
     echo [!] Ошибка загрузки.
+    if exist "%ZIP%" del /f /q "%ZIP%"
     pause
     exit /b 1
 )
-
 if not exist "%ZIP%" (
     echo [!] Файл не создан.
     pause
@@ -106,6 +98,11 @@ echo Чищу mods и kubejs...
 if exist "mods\" rmdir /s /q "mods"
 if exist "kubejs\" rmdir /s /q "kubejs"
 :: if exist "config\" rmdir /s /q "config"
+
+:: --- Исключаем служебные файлы из архива ---
+if exist "%FOLDER_NAME%\update.bat" del /f /q "%FOLDER_NAME%\update.bat"
+if exist "%FOLDER_NAME%\.last_commit" del /f /q "%FOLDER_NAME%\.last_commit"
+if exist "%FOLDER_NAME%\update.log" del /f /q "%FOLDER_NAME%\update.log"
 
 :: --- Установка ---
 echo Устанавливаю...

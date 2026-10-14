@@ -4,9 +4,9 @@
 
 !mods/**
 !kubejs/**
-!config/**
+## !config/**
 !.github/**
 
-!update.bat
-!aria2c.exe
+
+
 !.gitignore

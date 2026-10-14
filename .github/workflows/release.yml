@@ -7,7 +7,6 @@ on:
 permissions:
   contents: write
 
-  
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -20,9 +19,18 @@ jobs:
         id: sha
         run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Build zip (same structure as GitHub archive)
+      - name: Build zip (exclude tooling)
         run: |
-          git archive --format=zip --prefix=sborka-mc-main/ -o sborka.zip HEAD
+          git archive --format=zip \
+            --prefix=sborka-mc-main/ \
+            --output=sborka.zip \
+            HEAD \
+            -- . \
+            ':(exclude)update.bat' \
+            ':(exclude).github' \
+            ':(exclude).gitignore' \
+            ':(exclude).last_commit'\
+            ':(exclude)config'
 
       - name: Delete previous 'latest' release
         run: gh release delete latest --yes --cleanup-tag || true
@@ -31,7 +39,9 @@ jobs:
 
       - name: Create new release
         run: |
-          gh release create latest sborka.zip \
+          gh release create latest \
+            sborka.zip \
+            update.bat \
             --title "Latest build (${{ steps.sha.outputs.short }})" \
             --notes "Auto-built from commit ${{ steps.sha.outputs.short }}"
         env:
