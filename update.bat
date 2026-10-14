@@ -2,21 +2,16 @@
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
-:: ============================================
-::  ОБНОВЛЕНИЕ СБОРКИ (для одногруппников)
-::  Требуется: aria2c.exe рядом со скриптом
-:: ============================================
-
 set "URL=https://github.com/lolokeia/sborka-mc/releases/download/latest/sborka.zip"
 set "API=https://api.github.com/repos/lolokeia/sborka-mc/commits/master"
-set "FOLDER_NAME=sborka-mc-master"
+set "FOLDER_NAME=sborka-mc-main"
 set "ZIP=update.zip"
 set "SHAFILE=.last_commit"
 
 echo.
-echo ============================================
+
 echo   ОБНОВЛЕНИЕ СБОРКИ
-echo ============================================
+
 echo.
 
 :: --- Проверка aria2c ---

@@ -2,11 +2,12 @@ name: Auto Release
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 permissions:
   contents: write
 
+  
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -21,7 +22,7 @@ jobs:
 
       - name: Build zip (same structure as GitHub archive)
         run: |
-          git archive --format=zip --prefix=sborka-mc-master/ -o sborka.zip HEAD
+          git archive --format=zip --prefix=sborka-mc-main/ -o sborka.zip HEAD
 
       - name: Delete previous 'latest' release
         run: gh release delete latest --yes --cleanup-tag || true
