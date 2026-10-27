@@ -31,7 +31,7 @@
 		#Thrust multiplier for beam (focused/lense) thruster mode. Default 1.5
 		# Default: 1.5
 		# Range: 0.0 ~ 100.0
-		beamThrustMultiplier = 1.5
+		beamThrustMultiplier = 15.0
 		#Thrust multiplier applied to oxidized thruster fuels
 		# Default: 1.5
 		# Range: 0.0 ~ 100.0
